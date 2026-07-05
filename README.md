@@ -187,15 +187,13 @@ Large generated feature files, including the full wav2vec 2.0 embeddings CSV, ar
 
 The files are available here:
 
-[Download large feature files from Google Drive](PASTE_YOUR_GOOGLE_DRIVE_LINK_HERE)
+[Download large feature files in csv from Google Drive](https://drive.google.com/drive/folders/1b0xOoeCAfuvdx8_zl7M6oMR1QHbl9NkX?usp=sharing)
 
 Included files:
 
 - wav2vec 2.0 embeddings CSV
 - extracted acoustic feature files
 - model input feature files
-
-A small sample CSV may be included in this repository to show the expected data structure.
 
 ## Important Note
 
