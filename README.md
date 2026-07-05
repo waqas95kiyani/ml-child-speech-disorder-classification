@@ -169,6 +169,32 @@ The application allows users to upload one or more child speech audio files and 
 
 The application is intended for demonstration and research purposes only and is not designed for clinical deployment.
 
+## Screenshots
+
+### Streamlit App Interface
+![Streamlit App Interface](images/01-basic%20app%20interface.png)
+
+### Screening Result
+![Screening Result](images/02-screening%20result.png)
+
+### Audio Review
+![Audio Review](images/03-audio%20review.png)
+
+### Utterance Vote Breakdown
+![Utterance Vote Breakdown](images/04-utterance%20vote%20breakdown.png)
+
+### Acoustic Speech Profile
+![Acoustic Speech Profile](images/05-speech%20profile.png)
+
+### Best Model Confusion Matrix
+![Best Model Confusion Matrix](images/06-best%20model%20confusion%20matrix.png)
+
+### LOSO Validation Results Across Models
+![LOSO Validation Results Across Models](images/07-LOSO%20validation%20results%20(all%20models).png)
+
+### Final Held-Out Test Results Across Models
+![Final Held-Out Test Results Across Models](images/08-final%20held%20out%20test%20results%20(all%20models).png)
+
 ## Repository Contents
 
 This repository includes:
