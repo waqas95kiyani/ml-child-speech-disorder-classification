@@ -1,3 +1,206 @@
+# Childhood Speech Sound Disorder Screening using Machine Learning
+
+## Overview
+
+This project focuses on developing a machine learning-based screening framework for childhood Speech Sound Disorder (SSD) using child speech recordings from the UltraSuite dataset. The aim of the project was to classify child speech as either typically developing (TD) or speech-disordered (SSD), while also providing an interpretable acoustic speech profile to support understanding of the model output.
+
+Traditional SSD assessment relies heavily on speech pathologists’ listening, transcription, and clinical judgement. While expert assessment remains essential, this project explores how machine learning can support early screening by analysing child speech recordings and providing a structured prediction with an acoustic summary.
+
+This project was completed as part of the COMP6019 Master of Predictive Analytics majoring in Data Science final semester project at Curtin University.
+
+## Project Aim
+
+The main aim of this project was to develop and evaluate a machine learning-based screening system for childhood Speech Sound Disorder using child-only speech recordings from the UltraSuite dataset, supported by an interpretable eGeMAPS-based speech profile and a Streamlit demonstration application.
+
+## Project Objectives
+
+- Construct a usable research dataset from the UltraSuite repository using UXTD as the typically developing class and baseline UPX/UXSSD recordings as the speech-disordered class.
+- Isolate child-only speech from raw therapy recordings using speaker labels and timestamps.
+- Extract handcrafted eGeMAPS acoustic features and pretrained wav2vec 2.0 speech embeddings from processed child-only audio.
+- Train and compare speaker-independent machine learning models for binary classification of TD and SSD speech.
+- Evaluate model performance using screening-relevant metrics, including accuracy, SSD recall, and unweighted average recall.
+- Develop an interpretable acoustic speech profile using eGeMAPS features.
+- Build a Streamlit application prototype to demonstrate the complete screening pipeline.
+
+## Dataset
+
+This project used the publicly available UltraSuite speech dataset, which contains child speech therapy recordings and related annotation files.
+
+The project used three UltraSuite subsets:
+
+- **UXTD**: Typically developing child speech
+- **UXSSD**: Speech-disordered child speech
+- **UPX**: Speech-disordered child speech
+
+Only waveform audio files, text annotations, and speaker-label files were used. Ultrasound files and other annotation layers were excluded because the project focused on audio-based SSD screening.
+
+Raw audio files are not included in this repository due to dataset size and usage considerations.
+
+## Data Preprocessing
+
+The raw UltraSuite recordings contained both child and therapist speech. Therefore, one of the most important preprocessing steps was to isolate child-only speech before feature extraction and modelling.
+
+The preprocessing pipeline included:
+
+1. Reading raw audio files, text annotations, and speaker-label files.
+2. Constructing metadata tables for UXTD, UXSSD, and UPX.
+3. Using speaker labels to retain only segments marked as `CHILD`.
+4. Removing therapist speech segments marked as `SLT`.
+5. Trimming segment boundaries to reduce speaker overlap and noise.
+6. Removing very short segments that were unlikely to contain useful speech.
+7. Saving processed child-only audio files.
+8. Creating a combined master metadata table for modelling.
+
+## Feature Extraction
+
+Two feature extraction workflows were used in this project.
+
+### eGeMAPS Acoustic Features
+
+The eGeMAPS feature set was extracted using openSMILE. This produced 88 handcrafted acoustic features per recording.
+
+These features were used for:
+
+- Baseline machine learning models
+- Acoustic feature analysis
+- Interpretable speech profile development
+
+The eGeMAPS features were useful because they represent meaningful speech characteristics such as pitch, loudness, spectral balance, voice quality, formant structure, and temporal information.
+
+### wav2vec 2.0 Embeddings
+
+The second workflow used pretrained wav2vec 2.0 embeddings. The `facebook/wav2vec2-base-960h` model was used to extract deep speech representations from child-only audio recordings.
+
+Each audio recording was converted into a fixed-length 768-dimensional embedding using mean pooling. These embeddings were then used as input features for the final classification model.
+
+The wav2vec 2.0 embeddings provided stronger predictive performance, while eGeMAPS features were retained for interpretability.
+
+## Models Tested
+
+The following models were tested during the project:
+
+- Support Vector Machine using eGeMAPS features
+- Support Vector Machine with SMOTE using eGeMAPS features
+- CatBoost using eGeMAPS features
+- Multi-Layer Perceptron using eGeMAPS features
+- Support Vector Machine using wav2vec 2.0 embeddings
+
+A speaker-independent evaluation approach was used to reduce data leakage. This ensured that recordings from the same child were not split across training and testing data.
+
+## Evaluation Strategy
+
+The project used speaker-level evaluation because each child had multiple utterances. Instead of only evaluating individual recordings, predictions were aggregated at the child level using majority voting.
+
+The main evaluation metrics were:
+
+- Accuracy
+- Recall for SSD
+- Unweighted Average Recall
+
+Recall and UAR were especially important because the project was designed as a screening-support tool. In a screening context, missing a possible SSD case is more serious than incorrectly flagging a typically developing child for further review.
+
+## Results and Significance
+
+The best-performing model was the **wav2vec 2.0 embeddings + Support Vector Machine (SVM)** model. This model achieved the strongest overall performance across both validation and held-out testing.
+
+### Validation Results
+
+During child-level Leave-One-Speaker-Out validation, the wav2vec 2.0 + SVM model achieved:
+
+- **96% accuracy**
+- **100% unweighted average recall (UAR)**
+- **97% recall for SSD**
+
+Among the eGeMAPS-based models, the standard SVM with eGeMAPS features also performed strongly, achieving:
+
+- **94% accuracy**
+- **95% UAR**
+- **95% SSD recall**
+
+### Held-Out Test Results
+
+On the separate held-out test set of **16 unseen children**, the wav2vec 2.0 + SVM model achieved the best child-level performance:
+
+- **94% accuracy**
+- **88% recall**
+- **94% unweighted average recall (UAR)**
+
+The model correctly classified **15 out of 16 children** at the child level. It correctly identified **7 out of 8 SSD children** and correctly classified **all typically developing children** in the held-out test set.
+
+### Significance of Results
+
+These results are significant because the model was evaluated using a **speaker-independent approach**, meaning that children in the test set were not seen during model training. This reduced the risk of data leakage and provided a more realistic estimate of performance on unseen children.
+
+The results also showed that **wav2vec 2.0 embeddings captured stronger speech representations** than handcrafted acoustic features for classification. However, eGeMAPS features remained important because they supported the development of an interpretable acoustic speech profile.
+
+Overall, the project demonstrates that machine learning can support childhood speech disorder screening by combining:
+
+- Strong predictive performance
+- Child-level evaluation
+- Interpretable acoustic profiling
+- A practical Streamlit-based application prototype
+
+## Acoustic Speech Profile
+
+An interpretable acoustic speech profile was developed using eGeMAPS features. The profile was designed to provide an objective visual summary of a child’s speech characteristics compared with a typically developing reference group.
+
+The speech profile included six major acoustic dimensions:
+
+- Pitch / Prosody
+- Loudness / Energy
+- Voice Quality
+- Spectral / Phonation
+- Fluency / Rhythm
+- Articulation / Vowel Quality
+
+The profile was not designed to diagnose SSD directly. Instead, it was included as a support tool to help users understand which acoustic areas showed greater deviation from the TD reference group.
+
+## Streamlit Application
+
+A Streamlit application prototype was developed to demonstrate the practical use of the complete pipeline.
+
+The application allows users to upload one or more child speech audio files and view:
+
+- Final screening prediction
+- Prediction confidence
+- Acoustic speech profile
+- Utterance-level prediction details
+- Audio playback preview
+
+The application is intended for demonstration and research purposes only and is not designed for clinical deployment.
+
+## Repository Contents
+
+This repository includes:
+
+- Metadata preparation notebooks
+- Final modelling notebook
+- Streamlit application file
+- Sample metadata CSV files
+- README documentation
+
+Large generated files, such as full wav2vec 2.0 embeddings and trained model files, are not uploaded directly to this repository due to file size limitations.
+
+## Large Files
+
+Large generated feature files, including the full wav2vec 2.0 embeddings CSV, are not uploaded directly to this repository due to file size limitations.
+
+The files are available here:
+
+[Download large feature files from Google Drive](PASTE_YOUR_GOOGLE_DRIVE_LINK_HERE)
+
+Included files:
+
+- wav2vec 2.0 embeddings CSV
+- extracted acoustic feature files
+- model input feature files
+
+A small sample CSV may be included in this repository to show the expected data structure.
+
+## Important Note
+
+This project is intended as a machine learning-based screening support tool. It is not a diagnostic system and should not replace assessment by qualified speech-language professionals.
+
 # Instructions to Run the Code
 The following code was tested on two different devices with the following configurations:
 
